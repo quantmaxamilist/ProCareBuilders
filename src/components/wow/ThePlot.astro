@@ -1,0 +1,94 @@
+---
+// Wow B — "The Plot": a 3D model of a home and garden assembles itself in one movement
+// (≈2.8 s, when ≥50% on screen). The numbered list of services fades in at the end; hovering a
+// list item lights its part and pin, hovering a part lights the list item. Poster image for
+// reduced motion and no-WebGL.
+import { landServices } from '../../data/landscaping';
+const items = [
+  { key: 'house', name: 'Building & renovation', href: '/building' },
+  ...landServices.map((s) => ({ key: s.slug, name: s.name, href: `/landscaping/${s.slug}` })),
+];
+---
+<section class="plot on-deep" data-plot>
+  <div class="container plot__in">
+    <div class="plot__side">
+      <p class="label plot__eyebrow">What we do</p>
+      <h2 class="display h-2 plot__h">Building and landscaping</h2>
+      <ol class="plot__list" data-plot-list aria-label="Services">
+        {items.map((it, i) => (
+          <li><a href={it.href} data-key={it.key}><span class="label">{String(i + 1).padStart(2, '0')}</span><span class="plot__name">{it.name}</span><i>→</i></a></li>
+        ))}
+      </ol>
+      <button type="button" class="plot__replay" data-plot-replay>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7Z"/></svg>
+        Replay
+      </button>
+    </div>
+    <div class="plot__stage" data-plot-stage>
+      <img class="plot__poster" src="/img/plot-poster.webp" alt="Model of a house with a block-paved driveway, patio, lawn, decking, fencing, garden steps and a drainage channel" width="839" height="576" loading="lazy" data-plot-poster />
+      <div class="plot__pins" data-plot-pins aria-hidden="true">
+        {items.map((it) => <span class="plot__pin" data-pin={it.key}></span>)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .plot { padding-block: var(--section); overflow: hidden; }
+  .plot__in { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.6fr); gap: var(--space-7); align-items: center; }
+  .plot__eyebrow { color: var(--sand); }
+  .plot__h { margin-top: var(--space-3); }
+  .plot__list { margin-top: var(--space-6); border-top: 1px solid var(--navy-line); opacity: 0; transition: opacity 0.6s var(--ease-out); }
+  .plot.is-done .plot__list, .plot.is-static .plot__list { opacity: 1; }
+  .plot__list a { position: relative; display: flex; align-items: baseline; gap: 0.75rem; padding: 0.7rem 2rem 0.7rem 0; border-bottom: 1px solid var(--navy-line); font-family: var(--font-display); font-weight: 700; font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem); letter-spacing: -0.01em; color: var(--on-dark-soft); transition: color var(--dur-1), padding var(--dur-2) var(--ease-out); }
+  .plot__list .label { color: var(--sand); font-size: 0.68rem; }
+  .plot__list i { position: absolute; right: 0.25rem; top: 50%; transform: translateY(-50%); font-style: normal; color: var(--sand); opacity: 0; transition: opacity var(--dur-1); }
+  .plot__list a.is-hot, .plot__list a:hover { color: #fff; padding-left: 0.6rem; }
+  .plot__list a.is-hot i, .plot__list a:hover i { opacity: 1; }
+  .plot__replay { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px; margin-top: var(--space-4); font-weight: 600; font-size: 0.9rem; color: var(--on-dark-soft); opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+  .plot.is-done .plot__replay { opacity: 1; pointer-events: auto; }
+  .plot__replay:hover { color: #fff; }
+  .plot__stage { position: relative; aspect-ratio: 16 / 11; }
+  .plot__stage :global(canvas) { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+  .plot__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .plot.has-gl .plot__poster { display: none; }
+  .plot__pins { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
+  .plot.is-done .plot__pins { opacity: 1; }
+  .plot__pin { position: absolute; left: 0; top: 0; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--sand); box-shadow: 0 0 0 4px rgba(220, 185, 138, 0.25); transition: transform 0.3s var(--ease-out), box-shadow 0.3s; will-change: transform; }
+  .plot__pin.is-hot { box-shadow: 0 0 0 10px rgba(220, 185, 138, 0.35); }
+  @media (max-width: 900px) {
+    .plot__in { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+    .plot__side { display: contents; }
+    .plot__eyebrow, .plot__h { order: 1; }
+    .plot__h { margin-top: calc(var(--space-5) * -1 + var(--space-3)); }
+    .plot__stage { order: 2; aspect-ratio: 4 / 3.4; margin-inline: calc(var(--gutter) * -0.5); }
+    .plot__list { order: 3; margin-top: 0; }
+    .plot__replay { order: 4; margin-top: calc(var(--space-5) * -1 + var(--space-2)); }
+  }
+</style>
+
+<script>
+  const root = document.querySelector('[data-plot]') as HTMLElement | null;
+  if (root) {
+    const stage = root.querySelector('[data-plot-stage]') as HTMLElement;
+    const list = root.querySelector('[data-plot-list]') as HTMLElement;
+    const pinsWrap = root.querySelector('[data-plot-pins]') as HTMLElement;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const glOk = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } })();
+
+    if (reduce || !glOk) {
+      root.classList.add('is-static');
+    } else {
+      let started = false;
+      const boot = async () => {
+        if (started) return; started = true;
+        const { createPlot } = await import('../../scripts/plot.js');
+        createPlot({ root, stage, list, pinsWrap });
+      };
+      // Fetch three.js in idle time once the page has settled, or when the section approaches.
+      const near = new IntersectionObserver(([e]) => { if (e.isIntersecting) { boot(); near.disconnect(); } }, { rootMargin: '600px 0px' });
+      near.observe(stage);
+      (window.requestIdleCallback || ((f: any) => setTimeout(f, 1500)))(() => boot(), { timeout: 4000 });
+    }
+  }
+</script>

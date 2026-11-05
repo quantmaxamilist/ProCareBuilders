@@ -1,0 +1,48 @@
+---
+import { home } from '../../data/site';
+interface Props { heading?: 'h1' | 'h2' }
+const { heading = 'h2' } = Astro.props;
+const H = heading;
+---
+<section class="about on-stone section">
+  <div class="container">
+    <div class="about__grid">
+      <div class="about__num" data-reveal>
+        <span class="display about__big">30+</span>
+        <span class="label">years experience</span>
+      </div>
+      <div class="about__copy" data-reveal style="--d:0.06s">
+        <p class="label muted">{home.aboutTitle}</p>
+        <H class="display h-3 about__h">{home.aboutSub}</H>
+        <p class="about__p">{home.about}</p>
+      </div>
+    </div>
+    <ol class="about__values">
+      {home.values.map((v, i) => (
+        <li data-reveal style={`--d:${i * 0.06}s`}><span class="label">0{i + 1}</span><span class="about__v">{v}</span></li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .about__grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: var(--space-8); align-items: end; }
+  .about__num { display: grid; gap: var(--space-2); }
+  .about__big { font-size: var(--fs-display-1); line-height: 0.85; color: var(--navy); }
+  .about__num .label { color: var(--sand-deep); }
+  .about__h { margin-top: var(--space-3); max-width: 24ch; }
+  .about__p { margin-top: var(--space-5); max-width: 62ch; color: var(--ink-soft); font-size: 1.0625rem; }
+  .about__values { margin-top: var(--space-8); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--ink); }
+  .about__values li { display: grid; gap: var(--space-3); padding: var(--space-5) var(--space-5) var(--space-5) 0; border-right: 1px solid var(--line); }
+  .about__values li + li { padding-left: var(--space-5); }
+  .about__values li:last-child { border-right: 0; }
+  .about__values .label { color: var(--sand-deep); }
+  .about__v { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; line-height: 1.2; letter-spacing: -0.01em; }
+  @media (max-width: 900px) {
+    .about__grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+    .about__values { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .about__values li:nth-child(2) { border-right: 0; }
+    .about__values li:nth-child(3) { padding-left: 0; }
+    .about__values li:nth-child(n + 3) { border-top: 1px solid var(--line); }
+  }
+</style>

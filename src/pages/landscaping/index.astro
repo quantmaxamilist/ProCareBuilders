@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/site/PageHero.astro';
+import QuoteBand from '../../components/site/QuoteBand.astro';
+import Reviews from '../../components/home/Reviews.astro';
+import { landscapingIntro, landServices } from '../../data/landscaping';
+import { photo, srcset } from '../../data/extra';
+---
+<Base title="Landscaping | Pro Care Builders" description={landscapingIntro} image="/img/work/patio-porcelain-lawn-1600.webp">
+  <PageHero eyebrow="Landscaping" title="Landscaping" lede={landscapingIntro} photo="patio-porcelain-lawn" />
+
+  <section class="ls section">
+    <div class="container">
+      <div class="ls__head" data-reveal>
+        <p class="label muted">{landServices.length} landscaping services</p>
+        <h2 class="display h-2">Driveways, patios and gardens</h2>
+      </div>
+      <ul class="ls__grid">
+        {landServices.map((s, i) => {
+          const p = photo(s.photos[0]);
+          return (
+            <li data-reveal style={`--d:${(i % 3) * 0.06}s`}>
+              <a class="ls__card" href={`/landscaping/${s.slug}`}>
+                <figure class="ph ls__ph"><img src={`/img/work/${p.id}-800.webp`} srcset={srcset(p.id)} sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 33vw" alt={p.alt} width={p.w} height={p.h} loading="lazy" /></figure>
+                <div class="ls__body">
+                  <span class="label ls__n">{String(i + 1).padStart(2, '0')}</span>
+                  <h3 class="display h-3">{s.name}</h3>
+                  <p class="muted">{s.lede}</p>
+                  <span class="ls__go">View {s.name.toLowerCase()} <span>→</span></span>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+
+  <section class="on-stone">
+    <Reviews only={['Eilish Meredith', 'Ryan Michael']} showTitle={false} />
+  </section>
+  <QuoteBand />
+</Base>
+
+<style>
+  .ls__head { margin-bottom: var(--space-7); }
+  .ls__head h2 { margin-top: var(--space-3); max-width: 16ch; }
+  .ls__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6) var(--space-5); }
+  .ls__card { display: grid; gap: var(--space-4); }
+  .ls__ph { aspect-ratio: 4 / 3; border-radius: var(--radius); }
+  .ls__ph img { transition: transform 1s var(--ease-out); }
+  .ls__card:hover .ls__ph img { transform: scale(1.04); }
+  .ls__body { display: grid; gap: var(--space-2); }
+  .ls__n { color: var(--sand-deep); }
+  .ls__go { margin-top: var(--space-2); font-weight: 600; font-size: var(--fs-small); display: inline-flex; gap: 0.35rem; }
+  .ls__go span { color: var(--sand-deep); transition: transform var(--dur-2) var(--ease-out); }
+  .ls__card:hover .ls__go span { transform: translateX(4px); }
+  .on-stone :global(.rev) { background: var(--stone); }
+  .on-stone :global(.rev__card) { background: var(--paper); }
+  @media (max-width: 1000px) { .ls__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .ls__grid { grid-template-columns: minmax(0, 1fr); } }
+</style>

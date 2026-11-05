@@ -1,0 +1,242 @@
+---
+// Wow A — "Laid in": herringbone pavers lay themselves across a real before photo and reveal the
+// after photo of the same job. Plays once when ≥50% on screen (~3 s), pauses off screen,
+// ends on the clean after photo; pair tabs, before/after toggle and Replay appear only at the end.
+import { pairs, photo, src } from '../../data/extra';
+const data = pairs.map((p) => ({ ...p, b: photo(p.before), a: photo(p.after) }));
+---
+<section class="laid on-deep" data-laid>
+  <div class="container laid__in">
+    <div class="laid__side">
+      <p class="label laid__eyebrow">Before &amp; after</p>
+      <h2 class="display h-2 laid__h">Real jobs, before and after.</h2>
+      <p class="muted laid__p">Three jobs from the Pro Care Builders gallery: a front garden turned driveway, a living room wall and a stairwell.</p>
+      <div class="laid__ctrl" data-laid-ctrl aria-hidden="true">
+        <div class="laid__tabs" role="tablist" aria-label="Choose a job">
+          {data.map((p, i) => (
+            <button type="button" role="tab" class:list={['laid__tab', { 'is-on': i === 0 }]} aria-selected={i === 0 ? 'true' : 'false'} data-pair={i} tabindex="-1">
+              <span class="label">0{i + 1}</span>{p.label}
+            </button>
+          ))}
+        </div>
+        <div class="laid__row">
+          <div class="laid__toggle" role="group" aria-label="Show before or after">
+            <button type="button" data-show="before" tabindex="-1">Before</button>
+            <button type="button" data-show="after" class="is-on" tabindex="-1">After</button>
+          </div>
+          <button type="button" class="laid__replay" data-laid-replay tabindex="-1">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7Z"/></svg>
+            Replay
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="laid__stage" data-laid-stage>
+      <img class="laid__img laid__img--before" data-before src={src(data[0].before)} alt={data[0].b.alt} width={data[0].b.w} height={data[0].b.h} loading="lazy" decoding="async" />
+      <img class="laid__img laid__img--after" data-after src={src(data[0].after)} alt={data[0].a.alt} width={data[0].a.w} height={data[0].a.h} loading="lazy" decoding="async" />
+      <canvas class="laid__canvas" data-settled aria-hidden="true"></canvas>
+      <canvas class="laid__canvas" data-flight aria-hidden="true"></canvas>
+      <span class="laid__state label" data-state aria-live="polite">After</span>
+    </div>
+  </div>
+  <script type="application/json" data-pairs set:html={JSON.stringify(data.map((p) => ({ label: p.label, before: src(p.before), after: src(p.after), balt: p.b.alt, aalt: p.a.alt })))} />
+</section>
+
+<style>
+  .laid { padding-block: var(--section); overflow: hidden; }
+  .laid__in { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.6fr); gap: var(--space-8); align-items: center; }
+  .laid__eyebrow { color: var(--sand); }
+  .laid__h { margin-top: var(--space-3); max-width: 11ch; }
+  .laid__p { margin-top: var(--space-5); max-width: 36ch; }
+  .laid__ctrl { margin-top: var(--space-7); opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity 0.5s var(--ease-out), transform 0.6s var(--ease-out); }
+  .laid.is-done .laid__ctrl { opacity: 1; transform: none; pointer-events: auto; }
+  .laid__tabs { display: grid; border-top: 1px solid var(--navy-line); }
+  .laid__tab { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.85rem 0; border-bottom: 1px solid var(--navy-line); text-align: left; font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; color: var(--on-dark-soft); transition: color var(--dur-1); }
+  .laid__tab .label { color: var(--sand); font-size: 0.68rem; }
+  .laid__tab:hover, .laid__tab.is-on { color: #fff; }
+  .laid__tab.is-on { box-shadow: inset 3px 0 0 var(--sand); padding-left: 0.9rem; transition: padding var(--dur-2) var(--ease-out), color var(--dur-1); }
+  .laid__row { display: flex; align-items: center; gap: var(--space-4); margin-top: var(--space-5); flex-wrap: wrap; }
+  .laid__toggle { display: inline-flex; border: 1px solid var(--navy-line); border-radius: var(--radius); padding: 3px; }
+  .laid__toggle button { min-height: 40px; padding: 0 1rem; border-radius: 2px; font-weight: 600; font-size: 0.9rem; color: var(--on-dark-soft); }
+  .laid__toggle button.is-on { background: var(--sand); color: var(--ink); }
+  .laid__replay { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px; padding: 0 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--on-dark-soft); }
+  .laid__replay:hover { color: #fff; }
+
+  .laid__stage { position: relative; aspect-ratio: 3 / 2; border-radius: var(--radius); overflow: hidden; background: var(--navy-2); }
+  .laid__img, .laid__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .laid__img { object-fit: cover; transition: opacity 0.5s ease; }
+  .laid__img--before { filter: none; }
+  .laid__img--after { opacity: 0; }
+  .laid.is-done .laid__img--after { opacity: 1; }
+  .laid.is-done.show-before .laid__img--after { opacity: 0; }
+  .laid__canvas { pointer-events: none; transition: opacity 0.5s ease; }
+  .laid.is-done .laid__canvas { opacity: 0; }
+  .laid__state { position: absolute; left: 1rem; top: 1rem; background: rgba(7, 15, 39, 0.82); color: #fff; padding: 0.4rem 0.6rem; border-radius: 2px; opacity: 0; transition: opacity 0.4s; }
+  .laid.is-done .laid__state { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .laid__in { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+    .laid__stage { order: 2; aspect-ratio: 4 / 3; }
+    .laid__side { display: contents; }
+    .laid__eyebrow, .laid__h, .laid__p { order: 1; }
+    .laid__h { margin-top: calc(var(--space-6) * -1 + var(--space-3)); }
+    .laid__p { margin-top: calc(var(--space-6) * -1 + var(--space-4)); }
+    .laid__ctrl { order: 3; margin-top: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .laid__ctrl { transition: none; } }
+</style>
+
+<script>
+  const root = document.querySelector('[data-laid]') as HTMLElement | null;
+  if (root) {
+    const stage = root.querySelector('[data-laid-stage]') as HTMLElement;
+    const imgB = root.querySelector('[data-before]') as HTMLImageElement;
+    const imgA = root.querySelector('[data-after]') as HTMLImageElement;
+    const cS = root.querySelector('[data-settled]') as HTMLCanvasElement;
+    const cF = root.querySelector('[data-flight]') as HTMLCanvasElement;
+    const stateEl = root.querySelector('[data-state]') as HTMLElement;
+    const ctrl = root.querySelector('[data-laid-ctrl]') as HTMLElement;
+    const pairs = JSON.parse((root.querySelector('[data-pairs]') as HTMLElement).textContent || '[]');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const xS = cS.getContext('2d')!, xF = cF.getContext('2d')!;
+    let cur = 0, bricks: any[] = [], W = 0, H = 0, dpr = 1, u = 24, src: HTMLCanvasElement | null = null;
+    let t = 0, last = 0, raf = 0, running = false, visible = false, played = false, total = 0;
+    const DUR = 0.42, SPREAD = 2.3;
+
+    const load = (url: string) => new Promise<HTMLImageElement>((res, rej) => { const i = new Image(); i.decoding = 'async'; i.onload = () => res(i); i.onerror = rej; i.src = url; });
+
+    const setDone = (done: boolean) => {
+      root.classList.toggle('is-done', done);
+      ctrl.setAttribute('aria-hidden', String(!done));
+      ctrl.querySelectorAll('button').forEach((b) => b.tabIndex = done ? 0 : -1);
+    };
+
+    const layout = async () => {
+      const r = stage.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, innerWidth < 760 ? 1.25 : 1.5);
+      W = r.width; H = r.height;
+      [cS, cF].forEach((c) => { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); });
+      u = Math.max(16, Math.round(W / 44));
+      // Cover-fit the after image into an offscreen canvas the size of the stage.
+      const im = await load(pairs[cur].after);
+      src = document.createElement('canvas'); src.width = cS.width; src.height = cS.height;
+      const sx = src.getContext('2d')!;
+      const s = Math.max(src.width / im.naturalWidth, src.height / im.naturalHeight);
+      sx.drawImage(im, (src.width - im.naturalWidth * s) / 2, (src.height - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s);
+      buildBricks();
+    };
+
+    // 90° herringbone of 2u×u bricks (chains offset by (-1,+1)), rotated 45° for a driveway look.
+    const buildBricks = () => {
+      bricks = [];
+      const a = Math.PI / 4, ca = Math.cos(a), sa = Math.sin(a), cx0 = W / 2, cy0 = H / 2;
+      const n = Math.ceil(Math.hypot(W, H) / u / 2) + 3;
+      const add = (x: number, y: number, w: number, h: number) => {
+        const px = (x + w / 2) * u, py = (y + h / 2) * u;
+        const cx = cx0 + px * ca - py * sa, cy = cy0 + px * sa + py * ca;
+        const m = u * 1.6;
+        if (cx < -m || cy < -m || cx > W + m || cy > H + m) return;
+        const hw = (w * u) / 2 - 0.7, hh = (h * u) / 2 - 0.7;
+        const pts = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(([dx, dy]) => [cx + dx * ca - dy * sa, cy + dx * sa + dy * ca]);
+        bricks.push({ cx, cy, pts, t0: 0 });
+      };
+      for (let c = -n; c <= n; c++) for (let k = -n; k <= n; k++) {
+        add(2 * k - c, 2 * k + c, 2, 1);
+        add(2 * k - c + 1, 2 * k + c + 1, 1, 2);
+      }
+      // Lay from the bottom-left corner towards the top-right, with a little hand-laid jitter.
+      const proj = (b: any) => b.cx * 0.55 - b.cy * 0.85;
+      let mn = Infinity, mx = -Infinity;
+      bricks.forEach((b) => { const p = proj(b); mn = Math.min(mn, p); mx = Math.max(mx, p); });
+      bricks.forEach((b) => { b.t0 = ((proj(b) - mn) / (mx - mn)) * SPREAD + Math.random() * 0.12; });
+      bricks.sort((p, q) => p.t0 - q.t0);
+      total = SPREAD + 0.12 + DUR;
+    };
+
+    const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
+    const drawBrick = (ctx: CanvasRenderingContext2D, b: any, p: number) => {
+      const e = easeOut(p), s = 1 + (1 - e) * 0.18, dy = -(1 - e) * u * 1.1;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, p * 3);
+      ctx.setTransform(dpr * s, 0, 0, dpr * s, dpr * (b.cx - b.cx * s), dpr * (b.cy + dy - b.cy * s));
+      ctx.beginPath();
+      ctx.moveTo(b.pts[0][0], b.pts[0][1]);
+      for (let i = 1; i < 4; i++) ctx.lineTo(b.pts[i][0], b.pts[i][1]);
+      ctx.closePath();
+      ctx.clip();
+      const r = u * 1.2;
+      const sx = Math.max(0, (b.cx - r) * dpr), sy = Math.max(0, (b.cy - r) * dpr);
+      const sw = Math.min(src!.width - sx, 2 * r * dpr), sh = Math.min(src!.height - sy, 2 * r * dpr);
+      if (sw > 0 && sh > 0) ctx.drawImage(src!, sx, sy, sw, sh, sx / dpr, sy / dpr, sw / dpr, sh / dpr);
+      ctx.strokeStyle = 'rgba(7,15,39,0.55)';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    let settledIdx = 0;
+    const frame = (now: number) => {
+      raf = 0;
+      if (!running) return;
+      const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
+      xF.setTransform(1, 0, 0, 1, 0, 0);
+      xF.clearRect(0, 0, cF.width, cF.height);
+      while (settledIdx < bricks.length && t >= bricks[settledIdx].t0 + DUR) { drawBrick(xS, bricks[settledIdx], 1); settledIdx++; }
+      for (let i = settledIdx; i < bricks.length; i++) {
+        const b = bricks[i];
+        if (b.t0 > t) break;
+        drawBrick(xF, b, (t - b.t0) / DUR);
+      }
+      if (t >= total) { running = false; finish(); return; }
+      if (visible) raf = requestAnimationFrame(frame);
+    };
+
+    const finish = () => { setDone(true); stateEl.textContent = 'After'; };
+
+    const play = async () => {
+      running = false; if (raf) cancelAnimationFrame(raf);
+      setDone(false);
+      root.classList.remove('show-before');
+      setToggle('after');
+      await layout();
+      xS.setTransform(1, 0, 0, 1, 0, 0); xS.clearRect(0, 0, cS.width, cS.height);
+      xF.setTransform(1, 0, 0, 1, 0, 0); xF.clearRect(0, 0, cF.width, cF.height);
+      t = 0; settledIdx = 0; running = true; played = true;
+      if (reduce) { t = total; running = false; finish(); return; }
+      last = performance.now();
+      if (visible) raf = requestAnimationFrame(frame);
+    };
+
+    const setPair = (i: number) => {
+      cur = i;
+      const p = pairs[i];
+      imgB.src = p.before; imgB.alt = p.balt; imgA.src = p.after; imgA.alt = p.aalt;
+      ctrl.querySelectorAll<HTMLButtonElement>('[data-pair]').forEach((b) => { const on = +b.dataset.pair! === i; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+    };
+    const setToggle = (which: string) => {
+      ctrl.querySelectorAll<HTMLButtonElement>('[data-show]').forEach((b) => b.classList.toggle('is-on', b.dataset.show === which));
+      root.classList.toggle('show-before', which === 'before');
+      stateEl.textContent = which === 'before' ? 'Before' : 'After';
+    };
+
+    ctrl.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('button');
+      if (!btn) return;
+      if (btn.dataset.pair != null) { setPair(+btn.dataset.pair); play(); }
+      else if (btn.dataset.show) setToggle(btn.dataset.show);
+      else if (btn.hasAttribute('data-laid-replay')) play();
+    });
+
+    // Start when ≥50% is on screen; pause when it leaves.
+    const io = new IntersectionObserver(([en]) => {
+      visible = en.isIntersecting;
+      if (visible && !played) play();
+      else if (visible && running && !raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
+    }, { threshold: 0.5 });
+    io.observe(stage);
+    // Warm the first pair's images in idle time.
+    (window.requestIdleCallback || ((f: any) => setTimeout(f, 300)))(() => { load(pairs[0].after); load(pairs[0].before); });
+    let rt = 0;
+    window.addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(() => { if (root.classList.contains('is-done') || !played) return; }, 200); });
+  }
+</script>

@@ -1,0 +1,71 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/site/PageHero.astro';
+import QuoteBand from '../../components/site/QuoteBand.astro';
+import Gallery from '../../components/site/Gallery.astro';
+import Reviews from '../../components/home/Reviews.astro';
+import { landServices, type LandService } from '../../data/landscaping';
+import { photo, srcset } from '../../data/extra';
+
+export function getStaticPaths() {
+  return landServices.map((s, i) => ({ params: { slug: s.slug }, props: { s, next: landServices[(i + 1) % landServices.length] } }));
+}
+const { s, next } = Astro.props as { s: LandService; next: LandService };
+const np = photo(next.photos[0]);
+---
+<Base title={`${s.name} | Pro Care Builders`} description={s.lede} image={`/img/work/${s.photos[0]}-1600.webp`}>
+  <PageHero
+    eyebrow={s.name}
+    title={s.name}
+    lede={s.lede}
+    photo={s.photos[0]}
+    service={s.slug}
+    crumbs={[{ href: '/landscaping', label: 'Landscaping' }]}
+  />
+
+  <section class="svc section">
+    <div class="container svc__in">
+      <div class="svc__copy" data-reveal>
+        {s.body.map((para) => <p class="lede">{para}</p>)}
+        <a class="btn btn--navy" href={`/contact?service=${s.slug}`}>Get a free quote <span class="arr">→</span></a>
+      </div>
+      <div class="svc__gal">
+        <p class="label muted svc__count">{s.photos.length} {s.photos.length === 1 ? 'photo' : 'photos'} from our projects</p>
+        <Gallery ids={s.photos} cols={2} />
+      </div>
+    </div>
+  </section>
+
+  {s.review && <section class="on-stone"><Reviews only={[s.review]} showTitle={false} /></section>}
+
+  <a class="next on-navy" href={`/landscaping/${next.slug}`}>
+    <div class="container next__in">
+      <div>
+        <p class="label next__l">Next service</p>
+        <p class="display h-2 next__t">{next.name} <span class="next__arr">→</span></p>
+      </div>
+      <figure class="ph next__ph"><img src={`/img/work/${np.id}-800.webp`} srcset={srcset(np.id)} sizes="320px" alt="" width={np.w} height={np.h} loading="lazy" /></figure>
+    </div>
+  </a>
+  <QuoteBand service={s.slug} />
+</Base>
+
+<style>
+  .svc__in { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr); gap: var(--space-8); align-items: start; }
+  .svc__copy { display: grid; gap: var(--space-5); position: sticky; top: calc(var(--header-h) + var(--space-5)); }
+  .svc__copy .btn { justify-self: start; margin-top: var(--space-3); }
+  .svc__count { margin-bottom: var(--space-4); }
+  .on-stone :global(.rev) { background: var(--stone); }
+  .on-stone :global(.rev__card) { background: var(--paper); }
+  .next { display: block; padding-block: var(--space-8); }
+  .next__in { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
+  .next__l { color: var(--sand); margin-bottom: var(--space-3); }
+  .next__arr { display: inline-block; color: var(--sand); transition: transform var(--dur-2) var(--ease-out); }
+  .next:hover .next__arr { transform: translateX(8px); }
+  .next__ph { width: min(320px, 34vw); aspect-ratio: 4 / 3; border-radius: var(--radius); flex: none; }
+  @media (max-width: 900px) {
+    .svc__in { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+    .svc__copy { position: static; }
+  }
+  @media (max-width: 560px) { .next__ph { display: none; } }
+</style>

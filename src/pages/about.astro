@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import QuoteBand from '../components/site/QuoteBand.astro';
+import Reviews from '../components/home/Reviews.astro';
+import Arms from '../components/home/Arms.astro';
+import { home, site } from '../data/site';
+---
+<Base title="About | Pro Care Builders" description={home.about.slice(0, 155).replace(/\s\S*$/, '') + '…'} image="/img/work/front-dash-door-1600.webp">
+  <PageHero eyebrow={site.legalName} title={home.aboutTitle} lede={home.aboutSub} photo="front-dash-door" />
+  <section class="ab section">
+    <div class="container ab__in">
+      <div class="ab__num" data-reveal>
+        <span class="display ab__big">30+</span>
+        <span class="label">years experience</span>
+      </div>
+      <div data-reveal style="--d:0.06s">
+        <p class="statement">{home.about}</p>
+        <ol class="ab__vals">
+          {home.values.map((v, i) => <li><span class="label">0{i + 1}</span><span class="display">{v}</span></li>)}
+        </ol>
+      </div>
+    </div>
+  </section>
+  <Arms />
+  <Reviews />
+  <QuoteBand />
+</Base>
+
+<style>
+  .ab__in { display: grid; grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.4fr); gap: var(--space-8); align-items: start; }
+  .ab__num { display: grid; gap: var(--space-2); position: sticky; top: calc(var(--header-h) + var(--space-5)); }
+  .ab__big { font-size: var(--fs-display-1); line-height: 0.85; }
+  .ab__num .label { color: var(--sand-deep); }
+  .ab__vals { margin-top: var(--space-7); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+  .ab__vals li { display: grid; gap: var(--space-2); padding-top: var(--space-4); border-top: 2px solid var(--ink); }
+  .ab__vals .label { color: var(--sand-deep); }
+  .ab__vals .display { font-size: 1.3rem; line-height: 1.2; letter-spacing: -0.01em; }
+  @media (max-width: 860px) { .ab__in { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); } .ab__num { position: static; } }
+  @media (max-width: 480px) { .ab__vals { grid-template-columns: minmax(0, 1fr); } }
+</style>

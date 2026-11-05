@@ -1,0 +1,33 @@
+---
+import { home, reviews } from '../../data/site';
+interface Props { only?: string[]; showTitle?: boolean }
+const { only, showTitle = true } = Astro.props;
+const list = only ? reviews.filter((r) => only.includes(r.name)) : reviews;
+---
+<section class="rev section">
+  <div class="container">
+    {showTitle && <h2 class="display h-2 rev__h" data-reveal>“{home.slogan}”</h2>}
+    <div class:list={['rev__grid', { 'is-single': list.length === 1 }]}>
+      {list.map((r, i) => (
+        <figure class="rev__card" data-reveal style={`--d:${i * 0.07}s`}>
+          <svg class="rev__q" viewBox="0 0 40 32" width="40" height="32" aria-hidden="true"><path fill="currentColor" d="M0 32V19C0 8.5 5.4 2.2 16 0l1.6 4.4C11.4 6.3 8.6 9.8 8.3 15H16v17H0Zm24 0V19c0-10.5 5.4-16.8 16-19l1.6 4.4C35.4 6.3 32.6 9.8 32.3 15H40v17H24Z"/></svg>
+          <blockquote class="rev__text">“{r.text}”</blockquote>
+          <figcaption class="rev__name">{r.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .rev { background: var(--paper); }
+  .rev__h { max-width: 18ch; margin-bottom: var(--space-7); }
+  .rev__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+  .rev__grid.is-single { grid-template-columns: minmax(0, 860px); }
+  .rev__card { display: flex; flex-direction: column; gap: var(--space-5); padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem); background: var(--stone); border-radius: var(--radius); }
+  .rev__q { color: var(--sand-deep); }
+  .rev__text { font-size: 1.0625rem; line-height: 1.55; }
+  .is-single .rev__text { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-statement); line-height: 1.3; letter-spacing: -0.01em; }
+  .rev__name { margin-top: auto; font-weight: 600; padding-top: var(--space-4); border-top: 1px solid var(--line); }
+  @media (max-width: 900px) { .rev__grid { grid-template-columns: minmax(0, 1fr); } }
+</style>

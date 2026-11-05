@@ -1,0 +1,55 @@
+---
+import { home } from '../../data/site';
+import { landscapingIntro, landServices } from '../../data/landscaping';
+import { buildingTrades, srcset } from '../../data/extra';
+const arms = [
+  {
+    n: '01', title: 'Building & renovation', href: '/building', photo: 'stairwell-after', alt: 'Stairwell wall freshly plastered',
+    text: home.servicesIntro.replace(' Our services include:', ''),
+    items: buildingTrades.slice(0, 6).map((t) => t.name),
+  },
+  {
+    n: '02', title: 'Landscaping', href: '/landscaping', photo: 'patio-porcelain-lawn', alt: 'Large pale porcelain patio next to a lawn',
+    text: landscapingIntro,
+    items: landServices.map((s) => s.name),
+  },
+];
+---
+<section class="arms on-stone section">
+  <div class="container">
+    <div class="arms__grid">
+      {arms.map((a, i) => (
+        <a class="armc" href={a.href} data-reveal style={`--d:${i * 0.08}s`}>
+          <figure class="armc__ph ph">
+            <img src={`/img/work/${a.photo}-1600.webp`} srcset={srcset(a.photo)} sizes="(max-width: 760px) 100vw, 50vw" alt={a.alt} loading="lazy" width="1600" height="1200" />
+          </figure>
+          <div class="armc__body">
+            <p class="label armc__n">{a.n}</p>
+            <h2 class="display h-2 armc__t">{a.title}</h2>
+            <p class="armc__text muted">{a.text}</p>
+            <ul class="armc__list">{a.items.map((it) => <li>{it.replace('/', '/​')}</li>)}</ul>
+            <span class="armc__go">Explore {a.title.toLowerCase()} <span class="arr">→</span></span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .arms__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
+  .armc { display: grid; grid-template-rows: auto 1fr; background: var(--paper); border-radius: var(--radius); overflow: hidden; transition: transform var(--dur-3) var(--ease-out); }
+  .armc__ph { aspect-ratio: 16 / 10; }
+  .armc__ph img { transition: transform 1.1s var(--ease-out); }
+  .armc:hover .armc__ph img { transform: scale(1.04); }
+  .armc__body { padding: clamp(1.5rem, 1rem + 2vw, 2.75rem); display: flex; flex-direction: column; }
+  .armc__n { color: var(--sand-deep); }
+  .armc__t { margin-top: var(--space-3); }
+  .armc__text { margin-top: var(--space-4); max-width: 46ch; }
+  .armc__list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: var(--space-5); }
+  .armc__list li { font-size: var(--fs-small); padding: 0.3rem 0.65rem; border: 1px solid var(--line); border-radius: var(--radius); }
+  .armc__go { margin-top: auto; padding-top: var(--space-6); font-weight: 600; display: inline-flex; gap: 0.5rem; }
+  .armc__go .arr { color: var(--sand-deep); transition: transform var(--dur-2) var(--ease-out); }
+  .armc:hover .armc__go .arr { transform: translateX(5px); }
+  @media (max-width: 860px) { .arms__grid { grid-template-columns: minmax(0, 1fr); } }
+</style>

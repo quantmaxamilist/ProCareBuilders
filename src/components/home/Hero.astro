@@ -1,0 +1,69 @@
+---
+import { site, home } from '../../data/site';
+const phone = site.phones[0];
+---
+<section class="hero on-navy" data-hero>
+  <figure class="hero__photo ph" data-hero-photo>
+    <img src="/img/work/driveway-stone-pillars-1600.webp" srcset="/img/work/driveway-stone-pillars-800.webp 800w, /img/work/driveway-stone-pillars-1600.webp 1321w, /img/work/driveway-stone-pillars-2200.webp 2200w" sizes="100vw" alt="Block-paved driveway between stone pillars in front of a white house" width="2200" height="1547" fetchpriority="high" />
+  </figure>
+  <div class="hero__in container">
+    <div class="hero__copy">
+      <p class="label hero__eyebrow" data-hero-in style="--d:0s">{site.legalName} · Swansea</p>
+      <h1 class="display h-hero hero__h1" data-hero-in style="--d:0.06s">
+        <span class="sr-only">Pro Care Builders - </span>{home.h1}
+      </h1>
+      <p class="lede hero__sub" data-hero-in style="--d:0.14s">{home.sub}</p>
+      <div class="hero__arms" data-hero-in style="--d:0.2s">
+        <a href="/building" class="arm"><span class="label">01</span>Building &amp; renovation<span class="arm__arr">→</span></a>
+        <a href="/landscaping" class="arm"><span class="label">02</span>Landscaping<span class="arm__arr">→</span></a>
+      </div>
+      <div class="hero__cta" data-hero-in style="--d:0.26s">
+        <a class="btn" href="/contact" data-magnetic>Get a free quote <span class="arr">→</span></a>
+        <a class="hero__tel" href={`tel:${phone.tel}`}><span class="label">{home.callCta}</span>{phone.display}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero { position: relative; min-height: max(640px, 100svh); display: flex; align-items: flex-end; overflow: hidden; }
+  .hero__photo { position: absolute; inset: 0; margin: 0; }
+  .hero__photo img { height: 100%; object-position: 60% 42%; }
+  /* Light, see-through shade: enough for the headline, the photo stays visible edge to edge. */
+  .hero__photo::after { content: ''; position: absolute; inset: 0; background:
+    linear-gradient(180deg, rgba(7, 15, 39, 0.5) 0%, rgba(7, 15, 39, 0) 20%),
+    linear-gradient(90deg, rgba(7, 15, 39, 0.66) 0%, rgba(7, 15, 39, 0.4) 34%, rgba(7, 15, 39, 0) 62%),
+    linear-gradient(0deg, rgba(7, 15, 39, 0.5) 0%, rgba(7, 15, 39, 0) 36%); }
+  .hero__in { position: relative; z-index: 1; padding-top: calc(var(--header-h) + var(--space-8)); padding-bottom: clamp(2.5rem, 6vh, 5rem); }
+  .hero__copy { max-width: 760px; text-shadow: 0 1px 22px rgba(7, 15, 39, 0.45); }
+  .hero__eyebrow { color: var(--sand); margin-bottom: var(--space-5); }
+  .hero__cta .btn { text-shadow: none; }
+  .hero__h1 { max-width: 15ch; text-wrap: balance; }
+  .hero__sub { margin-top: var(--space-5); max-width: 40ch; color: rgba(255, 255, 255, 0.9); }
+  .hero__arms { display: flex; gap: 0; margin-top: var(--space-7); border-top: 1px solid rgba(255, 255, 255, 0.28); max-width: 640px; }
+  .arm { position: relative; flex: 1; display: flex; align-items: baseline; gap: 0.6rem; padding: 1rem 2rem 1rem 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(1.05rem, 0.9rem + 0.5vw, 1.375rem); letter-spacing: -0.01em; border-bottom: 1px solid rgba(255, 255, 255, 0.28); }
+  .arm + .arm { padding-left: 1.25rem; border-left: 1px solid rgba(255, 255, 255, 0.28); }
+  .arm .label { color: var(--sand); font-size: 0.7rem; }
+  .arm__arr { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--sand); transition: transform var(--dur-2) var(--ease-out); }
+  .arm:hover .arm__arr { transform: translate(4px, -50%); }
+  .arm::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--sand); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-3) var(--ease-out); }
+  .arm + .arm::after { left: -1px; }
+  .arm:hover::after { transform: scaleX(1); }
+  .hero__cta { display: flex; align-items: center; gap: var(--space-6); margin-top: var(--space-6); flex-wrap: wrap; }
+  .hero__tel { display: grid; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; letter-spacing: -0.01em; line-height: 1.1; }
+  .hero__tel .label { color: rgba(255, 255, 255, 0.85); font-size: 0.68rem; }
+
+  :global(.intro-on) [data-hero-in] { opacity: 0; transform: translateY(22px); }
+  :global(.intro-done) [data-hero-in] { opacity: 1; transform: none; transition: opacity 0.6s var(--ease-out), transform 0.7s var(--ease-out); transition-delay: var(--d, 0s); }
+
+  @media (max-width: 760px) {
+    .hero { display: block; min-height: 0; }
+    .hero__photo { position: relative; width: 100%; height: auto; aspect-ratio: 4 / 3.2; margin-top: var(--header-h); }
+    .hero__photo::after { background: linear-gradient(0deg, var(--navy) 0%, rgba(12, 26, 65, 0.4) 22%, rgba(12, 26, 65, 0) 42%); }
+    .hero__photo img { object-position: 60% 50%; }
+    .hero__in { padding-top: 0; margin-top: -3.5rem; padding-bottom: var(--space-7); }
+    .hero__arms { flex-direction: column; margin-top: var(--space-6); }
+    .arm + .arm { padding-left: 0; border-left: 0; }
+    .arm + .arm::after { left: 0; }
+  }
+</style>

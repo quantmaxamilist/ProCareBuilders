@@ -1,0 +1,22 @@
+---
+import { site } from '../../data/site';
+const phone = site.phones[0];
+---
+<div class="mbar" data-mbar>
+  <a class="mbar__call" href={`tel:${phone.tel}`}>
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z"/></svg>
+    Call {phone.display}
+  </a>
+  <a class="mbar__quote" href="/contact">Free quote</a>
+</div>
+<style>
+  .mbar { display: none; }
+  @media (max-width: 640px) {
+    .mbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: calc(var(--z-header) - 1); display: grid; grid-template-columns: 1.35fr 1fr; gap: 1px; background: var(--navy-line); transform: translateY(110%); transition: transform var(--dur-2) var(--ease-out); padding-bottom: env(safe-area-inset-bottom); }
+    .mbar.is-on { transform: none; }
+    .mbar a { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 600; font-size: 0.95rem; }
+    .mbar__call { background: var(--navy-deep); color: #fff; }
+    .mbar__call svg { color: var(--sand); }
+    .mbar__quote { background: var(--sand); color: var(--ink); }
+  }
+</style>

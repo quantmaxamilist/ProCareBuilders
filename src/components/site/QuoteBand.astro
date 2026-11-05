@@ -1,0 +1,32 @@
+---
+import { site, home } from '../../data/site';
+interface Props { service?: string }
+const { service } = Astro.props;
+const href = service ? `/contact?service=${service}` : '/contact';
+---
+<section class="qb on-sand">
+  <div class="container qb__in">
+    <h2 class="display h-2 qb__h" data-reveal>{home.quoteTitle}</h2>
+    <div class="qb__side" data-reveal style="--d:0.08s">
+      <div class="qb__tels">
+        {site.phones.map((p) => <a href={`tel:${p.tel}`}><span class="label">{p.label}</span>{p.display}</a>)}
+      </div>
+      <div class="qb__row">
+        <a class="btn btn--navy" href={href} data-magnetic>Get a free quote <span class="arr">→</span></a>
+        <a class="link-u qb__mail" href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .qb { padding-block: clamp(3.5rem, 2.5rem + 4vw, 6.5rem); }
+  .qb__in { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--space-7); align-items: end; }
+  .qb__h { max-width: 14ch; }
+  .qb__tels { display: flex; gap: var(--space-6); flex-wrap: wrap; }
+  .qb__tels a { display: grid; font-family: var(--font-display); font-weight: 800; font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.25rem); letter-spacing: -0.02em; line-height: 1.1; }
+  .qb__tels .label { font-size: 0.68rem; color: rgba(12, 26, 65, 0.65); }
+  .qb__row { display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap; margin-top: var(--space-5); }
+  .qb__mail { font-weight: 600; overflow-wrap: anywhere; }
+  @media (max-width: 860px) { .qb__in { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); } }
+</style>

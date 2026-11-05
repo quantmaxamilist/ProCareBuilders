@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import Intro from '../components/home/Intro.astro';
+import Hero from '../components/home/Hero.astro';
+import Arms from '../components/home/Arms.astro';
+import ThePlot from '../components/wow/ThePlot.astro';
+import Trades from '../components/home/Trades.astro';
+import LaidIn from '../components/wow/LaidIn.astro';
+import About from '../components/home/About.astro';
+import Projects from '../components/home/Projects.astro';
+import Reviews from '../components/home/Reviews.astro';
+import QuoteBand from '../components/site/QuoteBand.astro';
+import { seo } from '../data/site';
+---
+<Base title={seo.home.title} description={seo.home.description} intro>
+  <Intro />
+  <Hero />
+  <Arms />
+  <ThePlot />
+  <Trades />
+  <LaidIn />
+  <About />
+  <Projects />
+  <Reviews />
+  <QuoteBand />
+</Base>

@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, home } from '../data/site';
+import { buildingTrades } from '../data/extra';
+import { landServices } from '../data/landscaping';
+// Form fields First Name / Last Name / Email / Phone / Address and "Thank You!" are from the old site.
+// Until a form backend is connected (set data-endpoint, e.g. Formspree), submitting opens an email.
+const groups = [
+  { label: 'Landscaping', items: landServices.map((s) => ({ slug: s.slug, name: s.name })) },
+  { label: 'Building & renovation', items: buildingTrades.map((t) => ({ slug: t.slug, name: t.name })) },
+];
+---
+<Base title="Contact | Pro Care Builders" description={`${home.quoteTitle} Call ${site.phones[0].display} or ${site.phones[1].display}, or email ${site.email}.`}>
+  <section class="ct on-navy">
+    <div class="container ct__in">
+      <div class="ct__info">
+        <p class="label ct__e" data-reveal>Contact</p>
+        <h1 class="display h-1 ct__h" data-reveal style="--d:0.04s">{home.quoteTitle}</h1>
+        <ul class="ct__list" data-reveal style="--d:0.1s">
+          {site.phones.map((p) => (
+            <li><span class="label">{p.label}</span><a class="ct__big" href={`tel:${p.tel}`}>{p.display}</a></li>
+          ))}
+          <li><span class="label">Email</span><a class="ct__mail link-u" href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li><span class="label">Based in</span><span>{site.location}</span></li>
+        </ul>
+        <div class="ct__social" data-reveal style="--d:0.14s">
+          <a class="link-u" href={site.social.facebook} target="_blank" rel="noopener">Facebook</a>
+          <a class="link-u" href={site.social.instagram} target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </div>
+
+      <form class="form" data-form data-endpoint="" novalidate>
+        <div class="form__grid">
+          <label class="f"><span>First Name</span><input name="firstName" autocomplete="given-name" required /></label>
+          <label class="f"><span>Last Name</span><input name="lastName" autocomplete="family-name" /></label>
+          <label class="f"><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
+          <label class="f"><span>Phone</span><input name="phone" type="tel" autocomplete="tel" /></label>
+          <label class="f f--wide"><span>Address</span><input name="address" autocomplete="street-address" /></label>
+        </div>
+        <fieldset class="form__svc">
+          <legend>What do you need a quote for?</legend>
+          {groups.map((g) => (
+            <div class="form__grp">
+              <p class="label">{g.label}</p>
+              <div class="form__ticks">
+                {g.items.map((it) => (
+                  <label class="tick"><input type="checkbox" name="service" value={it.name} data-slug={it.slug} /><span>{it.name}</span></label>
+                ))}
+              </div>
+            </div>
+          ))}
+        </fieldset>
+        <label class="f f--wide"><span>Anything else? <em>(optional)</em></span><textarea name="message" rows="4"></textarea></label>
+        <p class="form__err" data-form-err role="alert" hidden>Please add your first name and an email address.</p>
+        <button class="btn form__btn" type="submit">Send for a free quote <span class="arr">→</span></button>
+        <div class="form__ok" data-form-ok hidden role="status">
+          <p class="display h-3">Thank You!</p>
+          <p class="muted">Your email app should have opened with your details. If it didn't, call {site.phones[0].display} or email {site.email}.</p>
+        </div>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ct { padding-top: calc(var(--header-h) + clamp(2.5rem, 2rem + 3vw, 5rem)); padding-bottom: var(--section); }
+  .ct__in { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: var(--space-8); align-items: start; }
+  .ct__e { color: var(--sand); }
+  .ct__h { margin-top: var(--space-3); font-size: var(--fs-display-2); max-width: 12ch; }
+  .ct__list { margin-top: var(--space-7); display: grid; gap: var(--space-5); }
+  .ct__list li { display: grid; gap: 0.2rem; }
+  .ct__list .label { color: var(--on-dark-soft); }
+  .ct__big { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.75rem); letter-spacing: -0.02em; line-height: 1.05; }
+  .ct__big:hover { color: var(--sand); }
+  .ct__mail { font-weight: 600; font-size: 1.15rem; justify-self: start; overflow-wrap: anywhere; }
+  .ct__social { display: flex; gap: var(--space-5); margin-top: var(--space-6); font-weight: 600; }
+
+  .form { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: clamp(1.25rem, 0.75rem + 2.5vw, 2.75rem); display: grid; gap: var(--space-5); }
+  .form__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .f { display: grid; gap: 0.35rem; font-size: var(--fs-small); font-weight: 600; }
+  .f em { font-weight: 400; font-style: normal; color: var(--ink-faint); }
+  .f--wide { grid-column: 1 / -1; }
+  .f input, .f textarea { font: inherit; font-weight: 400; font-size: 1rem; color: var(--ink); background: #fff; border: 1px solid rgba(12, 26, 65, 0.25); border-radius: var(--radius); padding: 0.75rem 0.85rem; min-height: 48px; width: 100%; }
+  .f input:focus, .f textarea:focus { outline: 2px solid var(--sand-deep); outline-offset: 1px; border-color: var(--navy); }
+  .f textarea { resize: vertical; }
+  .form__svc { border: 0; padding: 0; margin: 0; display: grid; gap: var(--space-4); }
+  .form__svc legend { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; margin-bottom: var(--space-3); letter-spacing: -0.01em; }
+  .form__grp .label { color: var(--sand-deep); margin-bottom: var(--space-2); }
+  .form__ticks { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tick { position: relative; cursor: pointer; }
+  .tick input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .tick span { display: inline-flex; align-items: center; min-height: 40px; padding: 0 0.85rem; border: 1px solid rgba(12, 26, 65, 0.25); border-radius: var(--radius); font-size: 0.92rem; font-weight: 500; transition: background var(--dur-1), color var(--dur-1), border-color var(--dur-1); }
+  .tick input:checked + span { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .tick input:focus-visible + span { outline: 2px solid var(--sand-deep); outline-offset: 2px; }
+  .form__err { color: #a12a1f; font-weight: 600; font-size: var(--fs-small); }
+  .form__btn { justify-self: start; }
+  .form__ok { padding: var(--space-5); background: var(--stone); border-radius: var(--radius); display: grid; gap: var(--space-2); }
+  @media (max-width: 900px) { .ct__in { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); } }
+  @media (max-width: 520px) { .form__grid { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  const form = document.querySelector('[data-form]') as HTMLFormElement | null;
+  if (form) {
+    // ?service=<slug> pre-ticks the matching service.
+    const want = new URLSearchParams(location.search).get('service');
+    if (want) form.querySelectorAll<HTMLInputElement>('input[data-slug]').forEach((i) => { if (i.dataset.slug === want) i.checked = true; });
+    const err = form.querySelector('[data-form-err]') as HTMLElement;
+    const ok = form.querySelector('[data-form-ok]') as HTMLElement;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const first = String(fd.get('firstName') || '').trim(), email = String(fd.get('email') || '').trim();
+      if (!first || !/^\S+@\S+\.\S+$/.test(email)) { err.hidden = false; return; }
+      err.hidden = true;
+      const services = fd.getAll('service').join(', ') || 'Not specified';
+      const endpoint = form.dataset.endpoint;
+      if (endpoint) {
+        try { await fetch(endpoint, { method: 'POST', body: fd, headers: { Accept: 'application/json' } }); } catch (x) {}
+      } else {
+        const body = [`Name: ${first} ${fd.get('lastName') || ''}`.trim(), `Email: ${email}`, `Phone: ${fd.get('phone') || ''}`, `Address: ${fd.get('address') || ''}`, `Services: ${services}`, '', String(fd.get('message') || '')].join('\n');
+        location.href = `mailto:Procarebuilders@yahoo.com?subject=${encodeURIComponent('Free quotation request – ' + services)}&body=${encodeURIComponent(body)}`;
+      }
+      ok.hidden = false;
+      form.querySelector<HTMLButtonElement>('.form__btn')!.hidden = true;
+    });
+  }
+</script>

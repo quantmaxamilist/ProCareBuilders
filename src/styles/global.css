@@ -1,0 +1,81 @@
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+body {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+img, video, canvas, svg { display: block; max-width: 100%; }
+img { height: auto; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+h1, h2, h3, h4, p, ul, ol, figure, blockquote { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+:focus-visible { outline: 2px solid var(--sand); outline-offset: 3px; }
+
+.container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
+.section { padding-block: var(--section); }
+.on-navy { background: var(--navy); color: var(--on-dark); }
+.on-deep { background: var(--navy-deep); color: var(--on-dark); }
+.on-stone { background: var(--stone); }
+.on-sand { background: var(--sand); color: var(--ink); }
+
+.display { font-family: var(--font-display); font-weight: 800; letter-spacing: var(--tracking-display); line-height: var(--lh-tight); font-variation-settings: 'opsz' 96; }
+.h-hero { font-size: var(--fs-hero); }
+.h-1 { font-size: var(--fs-display-1); }
+.h-2 { font-size: var(--fs-display-2); }
+.h-3 { font-size: var(--fs-display-3); line-height: var(--lh-snug); }
+.statement { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-statement); line-height: 1.25; letter-spacing: -0.01em; }
+.lede { font-size: var(--fs-lede); line-height: 1.5; }
+.label { font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--tracking-label); text-transform: uppercase; font-weight: 500; }
+.muted { color: var(--ink-soft); }
+.on-navy .muted, .on-deep .muted { color: var(--on-dark-soft); }
+
+/* Buttons: square-edged, solid. */
+.btn {
+  --bg: var(--sand); --fg: var(--ink);
+  position: relative; display: inline-flex; align-items: center; gap: 0.6em;
+  min-height: 48px; padding: 0 1.25rem;
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-text); font-weight: 600; font-size: 0.95rem; letter-spacing: 0.01em;
+  border-radius: var(--radius); white-space: nowrap;
+  transition: background var(--dur-1) ease, color var(--dur-1) ease, transform var(--dur-2) var(--ease-out);
+}
+.btn:hover { --bg: #e9cda5; }
+.btn .arr { transition: transform var(--dur-2) var(--ease-out); }
+.btn:hover .arr { transform: translateX(4px); }
+.btn--navy { --bg: var(--navy); --fg: #fff; }
+.btn--navy:hover { --bg: var(--navy-2); }
+.btn--ghost { --bg: transparent; --fg: currentColor; box-shadow: inset 0 0 0 1.5px currentColor; }
+.btn--ghost:hover { --bg: rgba(255,255,255,0.08); }
+.on-stone .btn--ghost:hover, .on-sand .btn--ghost:hover { --bg: rgba(12,26,65,0.06); }
+
+.link-u { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat; transition: background-size var(--dur-2) var(--ease-out); padding-bottom: 2px; }
+.link-u:hover { background-size: 100% 1.5px; }
+
+/* Photo frame with the shared grade baked into files. */
+.ph { position: relative; overflow: hidden; background: var(--navy-2); }
+.ph img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Reveal (only transform + opacity) */
+.js [data-reveal] { opacity: 0; transform: translateY(24px); }
+.js [data-reveal].is-in { opacity: 1; transform: none; transition: opacity 0.7s var(--ease-out), transform 0.8s var(--ease-out); transition-delay: var(--d, 0s); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 1rem; top: -100px; z-index: 200; background: var(--sand); padding: 0.75rem 1rem; }
+.skip:focus { top: 1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] { opacity: 1; transform: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+[hidden] { display: none !important; }

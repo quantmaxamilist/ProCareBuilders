@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+import { nav } from '../data/extra';
+---
+<Base title="Page not found | Pro Care Builders" description="This page could not be found." noindex>
+  <section class="nf on-navy">
+    <div class="container">
+      <p class="label nf__e">404</p>
+      <h1 class="display h-1">This page could not be found.</h1>
+      <p class="lede muted nf__p">Try one of these, or call us on <a class="link-u" href={`tel:${site.phones[0].tel}`}>{site.phones[0].display}</a>.</p>
+      <nav class="nf__nav" aria-label="Pages">
+        <a class="btn" href="/">Home</a>
+        {nav.map((n) => <a class="btn btn--ghost" href={n.href}>{n.label}</a>)}
+      </nav>
+    </div>
+  </section>
+</Base>
+<style>
+  .nf { min-height: 80svh; display: flex; align-items: center; padding-top: var(--header-h); padding-bottom: var(--space-8); }
+  .nf__e { color: var(--sand); margin-bottom: var(--space-4); }
+  .nf h1 { font-size: var(--fs-display-2); max-width: 16ch; }
+  .nf__p { margin-top: var(--space-5); }
+  .nf__nav { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-6); }
+</style>

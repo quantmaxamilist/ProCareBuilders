@@ -1,0 +1,92 @@
+---
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import Header from '../components/site/Header.astro';
+import Footer from '../components/site/Footer.astro';
+import MobileBar from '../components/site/MobileBar.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  noindex?: boolean;
+  intro?: boolean;
+}
+const { title, description, image = '/img/work/driveway-stone-pillars-1600.webp', noindex = false, intro = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/', site.url).href;
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  name: site.legalName,
+  url: site.url,
+  email: site.email,
+  telephone: site.phones[0].tel,
+  image: new URL(image, site.url).href,
+  logo: new URL('/img/logo-navy.png', site.url).href,
+  address: { '@type': 'PostalAddress', addressLocality: 'Swansea', addressCountry: 'GB' },
+  areaServed: 'Swansea',
+  sameAs: [site.social.facebook, site.social.instagram],
+};
+---
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, site.url).href} />
+    <meta name="theme-color" content="#0c1a41" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      try { if (sessionStorage.getItem('pcb-pt') === '1') document.documentElement.classList.add('pt-in'); } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <MobileBar />
+    <div class="pt" aria-hidden="true"><img src="/img/house-mark.png" alt="" width="645" height="598" /></div>
+    <div class="cursor" aria-hidden="true"><span class="cursor__ring"></span><span class="cursor__dot"></span></div>
+    <script>
+      import '../scripts/core.js';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /* Page transition panel */
+  .pt { position: fixed; inset: 0; z-index: var(--z-transition); background: var(--navy); display: grid; place-items: center; transform: translateY(101%); pointer-events: none; visibility: hidden; }
+  .pt-in .pt, .pt.is-out, .pt.is-leaving { visibility: visible; }
+  .pt img { width: 64px; height: auto; opacity: 0.9; }
+  .pt-in .pt { transform: none; }
+  .pt.is-out { transform: none; transition: transform 0.32s var(--ease-in-out); }
+  .pt.is-leaving { transform: translateY(-101%); transition: transform 0.4s var(--ease-in-out); }
+
+  /* Cursor: ring 24px, dot 6px, grows to 40px on links. Hidden on touch. */
+  .cursor { position: fixed; left: 0; top: 0; z-index: var(--z-cursor); pointer-events: none; display: none; }
+  .has-cursor .cursor { display: block; }
+  .cursor__ring, .cursor__dot { position: fixed; left: 0; top: 0; border-radius: 50%; will-change: transform; }
+  .cursor__ring { width: 24px; height: 24px; margin: -12px 0 0 -12px; border: 1.5px solid var(--sand-deep); transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out), margin 0.25s var(--ease-out), background 0.25s; }
+  .cursor__dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: var(--sand-deep); }
+  .cursor.is-link .cursor__ring { width: 40px; height: 40px; margin: -20px 0 0 -20px; background: rgba(220, 185, 138, 0.12); }
+  .cursor.is-hidden { opacity: 0; }
+</style>

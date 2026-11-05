@@ -1,0 +1,86 @@
+---
+// Logo-window intro: the house-and-hammer mark is a window onto the hero photo, then flies
+// past the camera. Under 2.4 s; any click, key, wheel or touch skips to the end. Once per session.
+---
+<div class="intro" data-intro aria-hidden="true">
+  <div class="intro__rig" data-intro-rig>
+    <div class="intro__tile" data-intro-tile></div>
+    <i class="intro__p intro__p--t"></i><i class="intro__p intro__p--b"></i><i class="intro__p intro__p--l"></i><i class="intro__p intro__p--r"></i>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var d = document.documentElement, played = false;
+    try { played = sessionStorage.getItem('pcb-intro') === '1'; } catch (e) {}
+    var force = /[?&]intro/.test(location.search);
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if ((played && !force) || reduce || d.classList.contains('pt-in')) d.classList.add('no-intro');
+    else d.classList.add('intro-on');
+  })();
+</script>
+
+<style>
+  .intro { display: none; }
+  :global(.intro-on) .intro { display: block; position: fixed; inset: 0; z-index: var(--z-intro); pointer-events: auto; overflow: hidden; animation: intro-failsafe 0.01s linear 5s forwards; }
+  .intro__rig { position: absolute; inset: 0; opacity: 0; transform-origin: var(--ox, 50%) var(--oy, 50%); will-change: transform; }
+  :global(.intro-on) .intro { background: var(--navy); }
+  .intro__tile {
+    position: absolute; left: var(--tx, 35%); top: var(--ty, 30%); width: var(--tw, 30vw); aspect-ratio: 645 / 598;
+    background: var(--navy);
+    -webkit-mask: url(/img/house-mark.png) center / 100% 100% no-repeat, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: url(/img/house-mark.png) center / 100% 100% no-repeat exclude, linear-gradient(#000 0 0);
+  }
+  .intro__p { position: absolute; background: var(--navy); }
+  .intro__p--t { left: -2px; right: -2px; top: -2px; height: calc(var(--ty, 30%) + 3px); }
+  .intro__p--b { left: -2px; right: -2px; bottom: -2px; top: calc(var(--ty, 30%) + var(--th, 30vw) - 1px); }
+  .intro__p--l { left: -2px; width: calc(var(--tx, 35%) + 3px); top: var(--ty, 30%); height: var(--th, 30vw); }
+  .intro__p--r { right: -2px; left: calc(var(--tx, 35%) + var(--tw, 30vw) - 1px); top: var(--ty, 30%); height: var(--th, 30vw); }
+  @keyframes intro-failsafe { to { opacity: 0; visibility: hidden; } }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  const d = document.documentElement;
+  const intro = document.querySelector('[data-intro]') as HTMLElement | null;
+  const rig = document.querySelector('[data-intro-rig]') as HTMLElement | null;
+  const photo = document.querySelector('[data-hero-photo]') as HTMLElement | null;
+  const lenis = (window as any).__pcb?.lenis;
+
+  const finish = () => {
+    d.classList.remove('intro-on');
+    d.classList.add('intro-done');
+    if (intro) intro.style.display = 'none';
+    lenis?.start();
+    try { sessionStorage.setItem('pcb-intro', '1'); } catch (e) {}
+  };
+
+  if (!d.classList.contains('intro-on') || !intro || !rig || !photo) {
+    d.classList.add('intro-done');
+  } else {
+    lenis?.stop();
+    window.scrollTo(0, 0);
+    // Place the house window over the centre of the hero photo.
+    const pr = photo.getBoundingClientRect();
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const tw = Math.min(pr.width * 0.5, vh * 0.42, 440);
+    const th = tw * (598 / 645);
+    const cx = pr.left + pr.width * (vw > 760 ? 0.56 : 0.5);
+    const cy = Math.min(pr.top + pr.height * 0.5, vh * 0.5);
+    const tx = cx - tw / 2, ty = cy - th / 2;
+    Object.entries({ '--tw': `${tw}px`, '--th': `${th}px`, '--tx': `${tx}px`, '--ty': `${ty}px`, '--ox': `${tx + tw * 0.49}px`, '--oy': `${ty + th * 0.66}px` }).forEach(([k, v]) => rig.style.setProperty(k, v));
+
+    const img = photo.querySelector('img');
+    const tl = gsap.timeline({ onComplete: finish });
+    tl.set(intro, { backgroundColor: 'transparent' }, 0)
+      .fromTo(rig, { opacity: 0 }, { opacity: 1, duration: 0.01 }, 0)
+      .fromTo(rig, { scale: 0.86 }, { scale: 1, duration: 0.7, ease: 'power3.out' }, 0)
+      .fromTo(img, { scale: 1.18 }, { scale: 1, duration: 2.2, ease: 'power2.out' }, 0)
+      .to(rig, { scale: 34, duration: 1.05, ease: 'expo.in' }, 0.85)
+      .add(() => d.classList.add('intro-done'), 1.7);
+
+    const skip = () => { if (tl.progress() < 1) tl.progress(1); };
+    ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach((ev) => window.addEventListener(ev, skip, { once: true, passive: true }));
+  }
+</script>

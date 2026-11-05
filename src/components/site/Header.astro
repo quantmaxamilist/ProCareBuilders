@@ -1,0 +1,87 @@
+---
+import { site } from '../../data/site';
+import { nav } from '../../data/extra';
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+const phone = site.phones[0];
+---
+<header class="hdr" data-header>
+  <div class="hdr__in container">
+    <a class="brand" href="/" aria-label="Pro Care Builders home">
+      <img class="brand__mark" src="/img/house-mark.png" alt="" width="645" height="598" />
+      <span class="brand__name">Pro Care Builders</span>
+    </a>
+    <nav class="hdr__nav" aria-label="Main">
+      {nav.map((n) => (
+        <a href={n.href} class:list={['hdr__link', { 'is-active': isActive(n.href), 'hdr__link--contact': n.href === '/contact' }]} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a>
+      ))}
+    </nav>
+    <div class="hdr__act">
+      <a class="hdr__phone" href={`tel:${phone.tel}`} aria-label={`Call ${phone.display}`}>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z"/></svg>
+        <span>{phone.display}</span>
+      </a>
+      <a class="btn hdr__cta" href="/contact"><span class="hdr__cta-long">Get a free quote</span><span class="hdr__cta-short">Free quote</span></a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .hdr { position: fixed; inset: 0 0 auto; z-index: var(--z-header); height: var(--header-h); color: #fff; transition: background var(--dur-2) ease, box-shadow var(--dur-2) ease, transform var(--dur-2) var(--ease-out); }
+  .hdr.is-solid { background: rgba(7, 15, 39, 0.94); box-shadow: 0 1px 0 var(--navy-line); }
+  .hdr.is-hidden { transform: translateY(-100%); }
+  .hdr__in { height: 100%; display: flex; align-items: center; gap: var(--space-6); }
+  .brand { display: flex; align-items: center; gap: 0.6rem; flex: none; }
+  .brand__mark { width: 34px; height: auto; }
+  .brand__name { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; letter-spacing: -0.02em; white-space: nowrap; }
+  .hdr__nav { display: flex; gap: var(--space-5); margin-left: auto; }
+  .hdr__link { position: relative; flex: none; font-size: 0.95rem; font-weight: 500; height: 44px; display: flex; align-items: center; color: var(--on-dark-soft); white-space: nowrap; transition: color var(--dur-1); }
+  .hdr__link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 8px; height: 1.5px; background: var(--sand); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-2) var(--ease-out); }
+  .hdr__link:hover, .hdr__link.is-active { color: #fff; }
+  .hdr__link:hover::after, .hdr__link.is-active::after { transform: scaleX(1); }
+  .hdr__link--contact { display: none; }
+  .hdr__act { display: flex; align-items: center; gap: var(--space-4); flex: none; }
+  .hdr__phone { display: flex; align-items: center; gap: 0.45rem; height: 44px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .hdr__phone svg { color: var(--sand); }
+  .hdr__cta { min-height: 44px; }
+  .hdr__cta-short { display: none; }
+
+  /* Narrow desktop / tablet: same single row, phone as an icon, shorter button. */
+  @media (max-width: 1180px) {
+    .hdr__in { gap: var(--space-5); }
+    .hdr__nav { gap: var(--space-4); }
+    .hdr__phone span { display: none; }
+    .hdr__phone { width: 44px; justify-content: center; }
+    .hdr__phone svg { width: 20px; height: 20px; }
+    .hdr__act { gap: var(--space-2); }
+  }
+  @media (max-width: 1000px) {
+    .hdr__cta-long { display: none; }
+    .hdr__cta-short { display: inline; }
+  }
+
+  /* Phones and small tablets: two rows. Row 1 logo + call + quote, row 2 every page link. */
+  @media (max-width: 860px) {
+    .hdr__in { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 58px 42px; gap: 0 var(--space-3); align-items: center; }
+    .hdr__nav { grid-column: 1 / -1; grid-row: 2; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter); height: 42px; align-items: center; justify-content: flex-start; gap: var(--space-6); border-top: 1px solid var(--navy-line); overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+    .hdr__nav::-webkit-scrollbar { display: none; }
+    .hdr__link { height: 42px; font-size: 0.875rem; }
+    .hdr__link::after { bottom: 6px; }
+    .hdr__link--contact { display: flex; }
+    .hdr__cta { min-height: 40px; padding: 0 1rem; }
+    .brand__name { font-size: 1.1rem; }
+    .brand__mark { width: 30px; }
+  }
+  @media (max-width: 480px) {
+    .hdr__cta { display: none; }
+    .hdr__phone svg { width: 22px; height: 22px; }
+    .hdr__nav { justify-content: space-between; gap: var(--space-3); }
+  }
+  @media (max-width: 370px) {
+    .brand { gap: 0.45rem; }
+    .brand__mark { width: 26px; }
+    .brand__name { font-size: 0.98rem; }
+    .hdr__nav { gap: 0.4rem; }
+    .hdr__link { font-size: 0.78rem; }
+  }
+</style>

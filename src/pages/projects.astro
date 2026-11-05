@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import QuoteBand from '../components/site/QuoteBand.astro';
+import Gallery from '../components/site/Gallery.astro';
+import { seo, home } from '../data/site';
+import { photos } from '../data/extra';
+// Order: landscaping first, then building; before/after pairs sit next to each other.
+const ids = [...photos.filter((p) => p.arm === 'landscaping'), ...photos.filter((p) => p.arm === 'building')].map((p) => p.id);
+---
+<Base title={seo.projects.title} description={seo.projects.description} image="/img/work/patio-balcony-porcelain-1600.webp">
+  <PageHero eyebrow="Projects" title={home.projectsTitle} lede={seo.projects.description} />
+  <section class="section">
+    <div class="container">
+      <Gallery ids={ids} filter />
+    </div>
+  </section>
+  <QuoteBand />
+</Base>

@@ -1,0 +1,107 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import QuoteBand from '../components/site/QuoteBand.astro';
+import Reviews from '../components/home/Reviews.astro';
+import { home } from '../data/site';
+import { buildingTrades, pairs, photo, srcset } from '../data/extra';
+const withPhoto = buildingTrades.filter((t) => t.photo);
+const noPhoto = buildingTrades.filter((t) => !t.photo);
+const bPairs = pairs.filter((p) => p.slug !== 'driveway');
+---
+<Base title="Building & Renovation | Pro Care Builders" description={home.servicesIntro.replace(' Our services include:', '')} image="/img/work/stairwell-after-1600.webp">
+  <PageHero
+    eyebrow="Pro Care Builders"
+    title="Building & renovation"
+    lede={home.servicesIntro.replace(' Our services include:', '')}
+    photo="stairwell-after"
+  />
+
+  <section class="trades-b section">
+    <div class="container">
+      <div class="tb__head" data-reveal>
+        <p class="label muted">{home.servicesTitle}</p>
+        <h2 class="display h-2">{buildingTrades.length} building trades</h2>
+      </div>
+      <div class="tb__grid">
+        {withPhoto.map((t, i) => {
+          const p = photo(t.photo!);
+          return (
+            <article class="tb__card" id={t.slug} data-reveal style={`--d:${(i % 3) * 0.06}s`}>
+              <figure class="ph tb__ph"><img src={`/img/work/${p.id}-800.webp`} srcset={srcset(p.id)} sizes="(max-width: 760px) 100vw, 50vw" alt={p.alt} width={p.w} height={p.h} loading="lazy" /></figure>
+              <div class="tb__row">
+                <h3 class="display h-3">{t.name.replace('/', '/​')}</h3>
+                <a class="tb__q" href={`/contact?service=${t.slug}`}>Get a quote <span>→</span></a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      <ul class="tb__list">
+        {noPhoto.map((t, i) => (
+          <li id={t.slug} data-reveal style={`--d:${i * 0.04}s`}>
+            <span class="display">{t.name}</span>
+            <a class="tb__q" href={`/contact?service=${t.slug}`}>Get a quote <span>→</span></a>
+          </li>
+        ))}
+        <li data-reveal><span class="display muted">and more</span><a class="tb__q" href="/contact">Ask us <span>→</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="ba on-deep section">
+    <div class="container">
+      <div class="ba__head" data-reveal>
+        <p class="label ba__eyebrow">Before &amp; after</p>
+        <h2 class="display h-2">Plastering</h2>
+      </div>
+      {bPairs.map((pr) => {
+        const b = photo(pr.before), a = photo(pr.after);
+        return (
+          <div class="ba__pair" data-reveal>
+            <figure class="ph ba__ph"><img src={`/img/work/${b.id}-800.webp`} srcset={srcset(b.id)} sizes="(max-width: 760px) 100vw, 50vw" alt={b.alt} width={b.w} height={b.h} loading="lazy" /><figcaption class="label">Before</figcaption></figure>
+            <figure class="ph ba__ph"><img src={`/img/work/${a.id}-800.webp`} srcset={srcset(a.id)} sizes="(max-width: 760px) 100vw, 50vw" alt={a.alt} width={a.w} height={a.h} loading="lazy" /><figcaption class="label">After</figcaption></figure>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="vals on-stone section">
+    <div class="container">
+      <ol class="vals__list">
+        {home.values.map((v, i) => <li data-reveal style={`--d:${i * 0.05}s`}><span class="label">0{i + 1}</span><span class="display">{v}</span></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <Reviews only={['Melanie Walters']} showTitle={false} />
+  <QuoteBand />
+</Base>
+
+<style>
+  .tb__head { margin-bottom: var(--space-7); }
+  .tb__head h2 { margin-top: var(--space-3); }
+  .tb__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6) var(--space-5); scroll-margin-top: 100px; }
+  .tb__card { scroll-margin-top: 100px; }
+  .tb__ph { aspect-ratio: 4 / 3; border-radius: var(--radius); }
+  .tb__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) 0; border-bottom: 1px solid var(--line); }
+  .tb__q { flex: none; font-weight: 600; font-size: var(--fs-small); display: inline-flex; gap: 0.35rem; min-height: 44px; align-items: center; }
+  .tb__q span { color: var(--sand-deep); transition: transform var(--dur-2) var(--ease-out); }
+  .tb__q:hover span { transform: translateX(4px); }
+  .tb__list { margin-top: var(--space-7); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 var(--space-5); border-top: 2px solid var(--ink); }
+  .tb__list li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); scroll-margin-top: 100px; }
+  .tb__list .display { font-size: clamp(1.15rem, 1rem + 0.5vw, 1.5rem); line-height: 1.2; }
+  .ba__head { margin-bottom: var(--space-6); }
+  .ba__eyebrow { color: var(--sand); margin-bottom: var(--space-3); }
+  .ba__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); margin-top: var(--space-4); }
+  .ba__ph { aspect-ratio: 4 / 3; border-radius: var(--radius); }
+  .ba__ph figcaption { position: absolute; left: 0.75rem; top: 0.75rem; background: rgba(7, 15, 39, 0.82); padding: 0.35rem 0.55rem; border-radius: 2px; }
+  .ba__ph + .ba__ph figcaption { background: var(--sand); color: var(--ink); }
+  .vals__list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-5); }
+  .vals__list li { display: grid; gap: var(--space-3); padding-top: var(--space-4); border-top: 2px solid var(--ink); }
+  .vals__list .label { color: var(--sand-deep); }
+  .vals__list .display { font-size: 1.3rem; line-height: 1.2; letter-spacing: -0.01em; }
+  @media (max-width: 900px) { .tb__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tb__list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .vals__list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .tb__grid, .tb__list, .ba__pair { grid-template-columns: minmax(0, 1fr); } }
+</style>
